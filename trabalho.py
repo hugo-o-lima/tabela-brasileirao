@@ -236,9 +236,8 @@ def exibicao(jogos: list[str]) -> str:
                 (' ' * espacos_pontos) + str(time.pontos) + ' ' +
                 (' ' * espacos_vitorias) + str(time.vitorias) + ' ' +
                 (' ' * espacos_saldo) + str(time.saldo_de_gols) + '\n')
-
         resultado_str += linha
     return resultado_str
 
 #Pergunta 2:
-#Pergunta 3
+#Pergunta 3:
