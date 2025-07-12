@@ -1,21 +1,21 @@
-# Tabela do Brasileirão
+# Brasileirão Table
 
-Este projeto processa partidas de futebol e classifica os times com base em pontos, número de vitórias, saldo de gols e ordem alfabética. Também realiza análises como identificar o time com melhor aproveitamento jogando em casa e o time com a defesa menos vazada.
+This project processes football matches and ranks teams based on points, number of wins, goal difference, and alphabetical order. It also performs analyses such as identifying the team with the best home performance and the team with the least goals conceded.
 
-## Descrição
+## Description
 
-O programa recebe uma lista de resultados de jogos e calcula para cada time:
+The program receives a list of match results and calculates for each team:
 
-- Pontos conquistados (3 por vitória, 1 por empate)
-- Número de vitórias
-- Saldo de gols (gols feitos menos gols sofridos)
+- Points earned (3 for a win, 1 for a draw)
+- Number of wins
+- Goal difference (goals scored minus goals conceded)
 
-Os times são classificados considerando, em ordem, pontos, vitórias, saldo de gols e ordem alfabética. Além disso, é possível obter o time com melhor desempenho jogando como mandante e o time com menor número de gols sofridos.
+Teams are ranked considering, in order, points, wins, goal difference, and alphabetical order. Additionally, it is possible to obtain the team with the best home performance and the team with the fewest goals conceded.
 
-## Como usar
+## How to use
 
-1. Clone o repositório:
+1. Clone the repository:
 
    ```bash
-   git clone https://github.com/seu-usuario/nome-do-repositorio.git
-   cd nome-do-repositorio
+   git clone https://github.com/your-username/repository-name.git
+   cd repository-name
