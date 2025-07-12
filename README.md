@@ -1,4 +1,4 @@
-# Campeonato de Futebol — Análise e Classificação
+# Tabela do Brasileirão
 
 Este projeto processa partidas de futebol e classifica os times com base em pontos, número de vitórias, saldo de gols e ordem alfabética. Também realiza análises como identificar o time com melhor aproveitamento jogando em casa e o time com a defesa menos vazada.
 
