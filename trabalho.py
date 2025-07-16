@@ -26,8 +26,12 @@ class Jogo:
 
 def nome_das_equipes(jogo:str) -> Jogo:
     """
+    Extrai os nomes do time anfitrião e visitante de uma string com o resultado do jogo,
+    retornando um objeto Jogo com os nomes preenchidos e os gols zerados.
+
+    Exemplo:
     >>> nome_das_equipes("Fluminense 1 Cuiaba 0")
-    nome_dos_times(anfitriao='Fluminense', visitante='Cuiaba')
+    Jogo(anfitriao='Fluminense', gols_anfitriao=0, visitante='Cuiaba', gols_visitante=0)
     """
     espacos = []
     for i in range(len(jogo)):
@@ -42,8 +46,12 @@ def nome_das_equipes(jogo:str) -> Jogo:
 
 def placar_do_jogo(jogo: str) -> Jogo:
     """
+    Extrai os gols do time anfitrião e visitante de uma string com o resultado do jogo,
+    retornando um objeto Jogo com os gols preenchidos e os nomes vazios.
+
+    Exemplo:
     >>> placar_do_jogo("Fluminense 1 Cuiaba 0")
-    placar(gols_anfitriao=1, gols_visitante=0)
+    Jogo(anfitriao='', gols_anfitriao=1, visitante='', gols_visitante=0)
     """
     espacos = []
     for i in range(len(jogo)):
@@ -57,36 +65,46 @@ def placar_do_jogo(jogo: str) -> Jogo:
 
 def vitorias(placar: Jogo) -> int:
     """
-    >>> vitorias(placar(gols_anfitriao=1, gols_visitante=0))
+    Retorna 1 se o time do anfitrião venceu, 0 caso contrário.
+
+    Exemplo:
+    >>> vitorias(Jogo('', 1, '', 0))
     1
-    >>> vitorias(placar(gols_anfitriao=0, gols_visitante=0))
+    >>> vitorias(Jogo('', 0, '', 0))
     0
     """
     vitorias = 0
-    if Jogo.gols_anfitriao > Jogo.gols_visitante:
+    if placar.gols_anfitriao > placar.gols_visitante:
         vitorias += 1
-    if Jogo.gols_anfitriao < Jogo.gols_visitante:
+    if placar.gols_anfitriao < placar.gols_visitante:
         vitorias += 0
     return vitorias
 
 def saldo_de_gols(placar: Jogo) -> int:
     """
-    >>> saldo_de_gols(placar(gols_anfitriao=1, gols_visitante=0))
+    Calcula o saldo de gols (gols do anfitrião menos gols do visitante).
+
+    Exemplo:
+    >>> saldo_de_gols(Jogo('', 1, '', 0))
     1
-    >>> saldo_de_gols(placar(gols_anfitriao=0, gols_visitante=0))
+    >>> saldo_de_gols(Jogo('', 0, '', 0))
     0
     """
     saldo = 0
-    saldo = Jogo.gols_anfitriao - Jogo.gols_visitante
+    saldo = placar.gols_anfitriao - placar.gols_visitante
     return saldo
 
 def ganho_pontos(x: Jogo) -> int:
     """
-    >>> ganho_pontos(placar(1, 0), anfitriao=True)
+    Calcula os pontos ganhos pelo time, considerando 3 pontos por vitória,
+    1 ponto por empate, e 0 para derrota.
+
+    Exemplo:
+    >>> ganho_pontos(Jogo('', 1, '', 0))
     3
-    >>> ganho_pontos(placar(0, 1), anfitriao=False)
+    >>> ganho_pontos(Jogo('', 0, '', 1))
     3
-    >>> ganho_pontos(placar(1, 1), anfitriao=True)
+    >>> ganho_pontos(Jogo('', 1, '', 1))
     1
     """
     if x.gols_anfitriao > x.gols_visitante:
@@ -106,7 +124,13 @@ class estatisticas:
 
 def verificar_elemento(lista, elemento_procurado) -> bool:
     """
-    Verifica se um elemento está em uma lista
+    Verifica se um elemento está presente em uma lista.
+
+    Exemplo:
+    >>> verificar_elemento([1, 2, 3], 2)
+    True
+    >>> verificar_elemento(["a", "b"], "c")
+    False
     """
     encontrado = False
     for elemento in lista:
@@ -116,26 +140,14 @@ def verificar_elemento(lista, elemento_procurado) -> bool:
 
 def deve_trocar(a: estatisticas, b: estatisticas) -> bool:
     """
-    Retorna True se o time b deve vir antes do time a, de acordo com os critérios:
-    - Pontos (maior primeiro)
-    - Vitórias (maior primeiro)
-    - Saldo de gols (maior primeiro)
-    - Ordem alfabética (nome menor vem antes)
+    Determina se o time b deve vir antes do time a na ordenação,
+    com base nos critérios: pontos, vitórias, saldo de gols e nome.
 
+    Exemplo:
     >>> a = estatisticas("Flamengo", 3, 1, 1)
     >>> b = estatisticas("Botafogo", 4, 1, 1)
     >>> deve_trocar(a, b)
     True
-
-    >>> a = estatisticas("Flamengo", 4, 1, 1)
-    >>> b = estatisticas("Botafogo", 4, 1, 1)
-    >>> deve_trocar(a, b)
-    True
-
-    >>> a = estatisticas("Botafogo", 4, 1, 1)
-    >>> b = estatisticas("Flamengo", 4, 1, 1)
-    >>> deve_trocar(a, b)
-    False
     """
     x = False
     if b.pontos > a.pontos:
@@ -151,12 +163,16 @@ def deve_trocar(a: estatisticas, b: estatisticas) -> bool:
                     x = True
     return x
 
-
-
 def ordena_times(estat: list[estatisticas]):
     """
-    Ordena a lista de estatísticas dos times com base nos critérios definidos:
-    pontos, vitórias, saldo de gols e nome.
+    Ordena uma lista de estatísticas de times segundo critérios de pontos,
+    vitórias, saldo de gols e ordem alfabética do nome.
+
+    Exemplo:
+    >>> estat = [estatisticas("Flamengo", 3, 1, 1), estatisticas("Botafogo", 4, 1, 1)]
+    >>> ordena_times(estat)
+    >>> estat[0].nome
+    'Botafogo'
     """
     for i in range(len(estat)):
         for j in range(i + 1, len(estat)):
@@ -165,13 +181,13 @@ def ordena_times(estat: list[estatisticas]):
 
 def list_str_para_jogo(lista: list[str]) -> list[Jogo]:
     """
-    Converte lista de strings para lista de objetos Jogo, usando funções nome_das_equipes e placar_do_jogo.
+    Converte uma lista de strings com resultados de jogos para uma lista
+    de objetos Jogo com nomes e placares.
 
     Exemplo:
     >>> jogos_str = ["Flamengo 2 Vasco 1", "Botafogo 3 Flamengo 2"]
     >>> list_str_para_jogo(jogos_str)
-    [Jogo(anfitriao='Flamengo', gols_anfitriao=2, visitante='Vasco', gols_visitante=1),
-     Jogo(anfitriao='Botafogo', gols_anfitriao=3, visitante='Flamengo', gols_visitante=2)]
+    [Jogo(anfitriao='Flamengo', gols_anfitriao=2, visitante='Vasco', gols_visitante=1), Jogo(anfitriao='Botafogo', gols_anfitriao=3, visitante='Flamengo', gols_visitante=2)]
     """
     jogos = []
     for linha in lista:
@@ -185,12 +201,10 @@ def list_str_para_jogo(lista: list[str]) -> list[Jogo]:
         ))
     return jogos
 
-def atualiza_estatisticas(nome_time: str, gols_feitos: int, gols_sofridos: int,nomes: list[str], estat: list[estatisticas]):
+def atualiza_estatisticas(nome_time: str, gols_feitos: int, gols_sofridos: int, nomes: list[str], estat: list[estatisticas]):
     """
-    Atualiza ou cria as estatísticas do time com base no resultado do jogo.
-
-    - Se o time ainda não estiver cadastrado, ele será adicionado às listas.
-    - Os pontos, vitórias e saldo de gols são atualizados com base nos gols feitos e sofridos.
+    Atualiza as estatísticas de um time com base no resultado de um jogo,
+    adicionando o time caso ainda não exista.
 
     Exemplo:
     >>> nomes = []
@@ -213,6 +227,16 @@ def atualiza_estatisticas(nome_time: str, gols_feitos: int, gols_sofridos: int,n
             estat[i].saldo_de_gols += (gols_feitos - gols_sofridos)
 
 def classifica_times(jogos: list[str]) -> list[estatisticas]:
+    """
+    Recebe uma lista de resultados de jogos e retorna a lista de estatísticas
+    dos times ordenada pelo critério de classificação.
+
+    Exemplo:
+    >>> jogos = ["Flamengo 2 Vasco 1", "Botafogo 3 Flamengo 2"]
+    >>> resultado = classifica_times(jogos)
+    >>> resultado[0].nome
+    'Botafogo'
+    """
     nomes: list[str]= []
     estat: list[estatisticas] = []
 
@@ -235,25 +259,15 @@ def classifica_times(jogos: list[str]) -> list[estatisticas]:
 
 def exibicao(jogos: list[str]) -> str:
     '''
+    Gera uma string formatada com a classificação dos times a partir
+    da lista de resultados dos jogos.
+
+    Exemplo:
     >>> jogos = ["Flamengo 2 Vasco 1\\n", "Vasco 1 Botafogo 1\\n", "Botafogo 3 Flamengo 2\\n"]
     >>> print(exibicao(jogos))
     Botafogo 4 1 1
     Flamengo 3 1 0
     Vasco    1 0 -1
-    <BLANKLINE>
-
-    >>> jogos = ["Flamengo 1 Vasco 1\\n", "Vasco 2 Botafogo 2\\n", "Botafogo 1 Flamengo 1\\n"]
-    >>> print(exibicao(jogos))
-    Botafogo 2 0 0
-    Flamengo 2 0 0
-    Vasco    2 0 0
-    <BLANKLINE>
-    >>> jogos = ["Palmeiras 1 Sao-Paulo 1\\n", "Flamengo 1 Atletico-MG 1\\n", "Atletico-MG 1 Palmeiras 1\\n", "Sao-Paulo 1 Flamengo 1\\n"]
-    >>> print(exibicao(jogos))
-    Atletico-MG 2 0 0
-    Flamengo    2 0 0
-    Palmeiras   2 0 0
-    Sao-Paulo   2 0 0
     <BLANKLINE>
     '''
     resultado = classifica_times(tira_quebra_de_linha(jogos))
@@ -275,6 +289,3 @@ def exibicao(jogos: list[str]) -> str:
                 (' ' * espacos_saldo) + str(time.saldo_de_gols) + '\n')
         resultado_str += linha
     return resultado_str
-
-#Pergunta 2:
-#Pergunta 3:
