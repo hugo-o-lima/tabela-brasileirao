@@ -12,9 +12,11 @@ def main():
 
     jogos = le_arquivo(sys.argv[1])
 
-    # TODO: solução da pergunta 1
     print(exibicao(jogos))
+    print(exibe_aproveitamento(jogos))
+    print(exibe_melhor_defesa(jogos))
 
+    # TODO: solução da pergunta 1
 def tira_quebra_de_linha(jogos: list[str]) -> list[str]:
     """
     Remove o último caractere (que é '\n') de cada string da lista.
@@ -136,8 +138,8 @@ def deve_trocar(a: Estatisticas, b: Estatisticas) -> bool:
     com base nos critérios: pontos, vitórias, saldo de gols e nome.
 
     Exemplo:
-    >>> a = estatisticas("Flamengo", 3, 1, 1)
-    >>> b = estatisticas("Botafogo", 4, 1, 1)
+    >>> a = Estatisticas("Flamengo", 3, 1, 1)
+    >>> b = Estatisticas("Botafogo", 4, 1, 1)
     >>> deve_trocar(a, b)
     True
     """
@@ -161,7 +163,7 @@ def ordena_times(estat: list[Estatisticas]) -> None:
     vitórias, saldo de gols e ordem alfabética do nome.
 
     Exemplo:
-    >>> estat = [estatisticas("Flamengo", 3, 1, 1), estatisticas("Botafogo", 4, 1, 1)]
+    >>> estat = [Estatisticas("Flamengo", 3, 1, 1), Estatisticas("Botafogo", 4, 1, 1)]
     >>> ordena_times(estat)
     >>> estat[0].nome
     'Botafogo'
@@ -203,7 +205,7 @@ def atualiza_estatisticas(nome_time: str, gols_feitos: int, gols_sofridos: int, 
     >>> estat = []
     >>> atualiza_estatisticas("Flamengo", 2, 1, nomes, estat)
     >>> estat[0]
-    estatisticas(nome='Flamengo', pontos=3, vitorias=1, saldo_de_gols=1)
+    Estatisticas(nome='Flamengo', pontos=3, vitorias=1, saldo_de_gols=1)
     """
     if not verificar_elemento(nomes, nome_time):
         nomes.append(nome_time)
@@ -225,7 +227,7 @@ def transforma_estatistica(jogos: list[str]) -> list[Estatisticas]:
 
     Exemplo:
     >>> jogos = ["Flamengo 2 Vasco 1", "Botafogo 3 Flamengo 2"]
-    >>> resultado = classifica_times(jogos)
+    >>> resultado = transforma_estatistica(jogos)
     >>> resultado[0].nome
     'Botafogo'
     """
@@ -278,13 +280,199 @@ def exibicao(jogos: list[str]) -> str:
         resultado_str += linha
     return resultado_str
     # TODO: solução da pergunta 2
-'''
-Para a pergunta 2, você deve identificar o(s) time(s) que obtiveram o maior número de pontos em
-relação à quantidade de pontos possíveis jogando como anfitrião. Por exemplo, um time que realizou
-5 jogos como anfitrião (15 pontos possíveis) e conquistou três vitórias e um empate, obteve 10 pontos,
-portanto, 66% de aproveitamento.
-'''
+@dataclass
+class EstatisticaCasa:
+    """
+    Estatísticas de um time em jogos como anfitrião:
+    - nome: nome do time
+    - pontos: soma dos pontos conquistados em casa
+    - jogos: número de jogos em casa
+    >>> estat = []
+    >>> atualiza_casa("Flamengo", 3, estat)
+    >>> estat
+    [EstatisticaCasa(nome='Flamengo', pontos=3, jogos=1)]
+    >>> atualiza_casa("Vasco", 1, estat)
+    >>> estat
+    [EstatisticaCasa(nome='Flamengo', pontos=3, jogos=1), EstatisticaCasa(nome='Vasco', pontos=1, jogos=1)]
+    >>> atualiza_casa("Flamengo", 1, estat)
+    >>> estat
+    [EstatisticaCasa(nome='Flamengo', pontos=4, jogos=2), EstatisticaCasa(nome='Vasco', pontos=1, jogos=1)]
+    """
+    nome: str
+    pontos: int
+    jogos: int
+
+def atualiza_casa(nome_time: str, pontos: int, estat: list[EstatisticaCasa]) -> None:
+    """
+    Atualiza a lista estat:
+    - se o time já existe, acumula pontos e incrementa jogos
+    - senão, cria nova entrada
+    """
+    for i in estat:
+        if i.nome == nome_time:
+            i.pontos += pontos
+            i.jogos += 1
+            return
+    # não encontrou: adiciona
+    estat.append(EstatisticaCasa(nome_time, pontos, 1))
+
+def calcula_pontos_casa_rec(jogos: list[Jogo], estat: list[EstatisticaCasa]) -> list[EstatisticaCasa]:
+    """
+    Calcula recursivamente os pontos conquistados pelos times em jogos como anfitriões,
+    atualizando a lista de estatísticas.
+    >>> jogos = [Jogo('Flamengo', 2, 'Vasco', 1), Jogo('Botafogo', 1, 'Cuiaba', 1), Jogo('Flamengo', 0, 'Botafogo', 2)]
+    >>> estat_inicial = []
+    >>> resultado = calcula_pontos_casa_rec(jogos, estat_inicial)
+    >>> resultado
+    [EstatisticaCasa(nome='Flamengo', pontos=3, jogos=2), EstatisticaCasa(nome='Botafogo', pontos=1, jogos=1)]
+    >>> calcula_pontos_casa_rec([], [])
+    []
+    """
+    resultado: list[EstatisticaCasa] = estat
+    if jogos:
+        jogo = jogos[0]
+
+        if jogo.gols_anfitriao > jogo.gols_visitante:
+            pts = 3
+        elif jogo.gols_anfitriao == jogo.gols_visitante:
+            pts = 1
+        else:
+            pts = 0
+
+        atualiza_casa(jogo.anfitriao, pts, resultado)
+        resultado = calcula_pontos_casa_rec(jogos[1:], resultado)
+
+    return resultado
+
+def aux_recursiva(jogos: list[Jogo]) -> list[EstatisticaCasa]:
+    """
+    Função externa que inicializa o acumulador e chama a função recursiva.
+    >>> jogos = [Jogo('Flamengo', 2, 'Vasco', 1), Jogo('Botafogo', 1, 'Cuiaba', 1), Jogo('Flamengo', 0, 'Botafogo', 2)]
+    >>> resultado = aux_recursiva(jogos)
+    >>> resultado
+    [EstatisticaCasa(nome='Flamengo', pontos=3, jogos=2), EstatisticaCasa(nome='Botafogo', pontos=1, jogos=1)]
+    >>> aux_recursiva([])
+    []
+    """
+    return calcula_pontos_casa_rec(jogos, [])
+
+def exibe_aproveitamento(jogos_str: list[str]) -> str:
+    """
+    Recebe lista de strings com '\\n', calcula o melhor aproveitamento como anfitrião
+    e retorna uma única string com o resultado.
+    >>> jogos = ["Flamengo 2 Vasco 1\\n", "Vasco 1 Botafogo 1\\n", "Botafogo 3 Flamengo 2\\n"]
+    >>> exibe_aproveitamento(jogos)
+    'Aproveitamento máximo em casa: 100.0% - Time: Flamengo, Botafogo'
+    >>> jogos_2 = ["TimeA 3 TimeB 0\\n", "TimeC 1 TimeD 1\\n", "TimeA 1 TimeC 1\\n"]
+    >>> exibe_aproveitamento(jogos_2)
+    'Aproveitamento máximo em casa: 66.7% - Time: TimeA'
+    """
+    # pré‑processamento inline
+    linhas_sem_quebra = tira_quebra_de_linha(jogos_str)
+    jogos = list_str_para_jogo(linhas_sem_quebra)
+
+    estatisticas_casa = aux_recursiva(jogos)
+    float_max = 0.0
+    melhores = []
+
+    for estat in estatisticas_casa:
+        if estat.jogos > 0:
+            pct = estat.pontos / (estat.jogos * 3)
+            if pct > float_max:
+                float_max = pct
+                melhores = [estat.nome]
+            elif pct == float_max:
+                melhores.append(estat.nome)
+
+    # monta o texto de saída
+    percentual = round(float_max * 100, 1)
+    resultado  = "Aproveitamento máximo em casa: " + str(percentual) + "% - Time: "
+    for i in range(len(melhores)):
+        resultado += melhores[i]
+        if i < len(melhores) - 1:
+            resultado += ", "
+
+    return resultado
     # TODO: solução da pergunta 3
+@dataclass
+class GolsSofridos:
+    '''
+    Armazena o nome de um time e o total de gols que sofreu.
+    '''
+    nome: str
+    gols: int
+def atualiza_lista_gols(time: str, gols: int, lista_estat: list[GolsSofridos]) -> None:
+    """
+    Procura um time na lista e atualiza seus gols. Se não encontrar, cria um novo registro.
+    """
+    encontrado = False
+    i = 0
+    while i < len(lista_estat) and not encontrado:
+        if lista_estat[i].nome == time:
+            lista_estat[i].gols += gols
+            encontrado = True
+        i += 1
+    
+    if not encontrado:
+        lista_estat.append(GolsSofridos(time, gols))
+
+def calcula_gols_sofridos_rec(jogos: list[Jogo], estat_gols: list[GolsSofridos]) -> list[GolsSofridos]:
+    """
+    Função recursiva que preenche uma lista com os gols sofridos por cada time.
+    """
+    resultado_final: list[GolsSofridos]
+
+    if not jogos:
+        resultado_final = estat_gols
+    else:
+        jogo_atual = jogos[0]
+        atualiza_lista_gols(jogo_atual.anfitriao, jogo_atual.gols_visitante, estat_gols)
+        atualiza_lista_gols(jogo_atual.visitante, jogo_atual.gols_anfitriao, estat_gols)
+
+        resultado_final = calcula_gols_sofridos_rec(jogos[1:], estat_gols)
+
+    return resultado_final
+
+def exibe_melhor_defesa(jogos_str: list[str]) -> str:
+    """
+    Identifica o time que sofreu menos gols e retorna uma string formatada.
+
+    >>> jogos = ["Flamengo 2 Vasco 1\\n", "Vasco 1 Botafogo 1\\n", "Botafogo 3 Flamengo 2\\n"]
+    >>> exibe_melhor_defesa(jogos)
+    'Time com menos gols sofridos: Vasco, Botafogo (3 gols)'
+    """
+    string_de_saida = ""
+    linhas_sem_quebra = tira_quebra_de_linha(jogos_str)
+    jogos_obj = list_str_para_jogo(linhas_sem_quebra)
+    if not jogos_obj:
+        string_de_saida = "Nenhum jogo para analisar."
+    else:
+        estat_final = calcula_gols_sofridos_rec(jogos_obj, [])
+        min_gols = -1
+        if estat_final:
+            min_gols = estat_final[0].gols
+            i = 1
+            while i < len(estat_final):
+                if estat_final[i].gols < min_gols:
+                    min_gols = estat_final[i].gols
+                i += 1
+
+        melhores_defesas = []
+        if min_gols != -1:
+            for item in estat_final:
+                if item.gols == min_gols:
+                    melhores_defesas.append(item.nome)
+        
+        times_str = ""
+        if melhores_defesas:
+            times_str = melhores_defesas[0]
+            i = 1
+            while i < len(melhores_defesas):
+                times_str = times_str + ", " + melhores_defesas[i]
+                i += 1
+        string_de_saida = "Time com menos gols sofridos: " + times_str + " (" + str(min_gols) + " gols)"
+    
+    return string_de_saida
 
 def le_arquivo(nome: str) -> list[str]:
     '''
