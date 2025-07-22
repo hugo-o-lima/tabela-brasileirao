@@ -1,4 +1,6 @@
 import sys
+from dataclasses import dataclass
+
 def main():
     if len(sys.argv) < 2:
         print('Nenhum nome de arquivo informado.')
@@ -12,6 +14,7 @@ def main():
 
     # TODO: solução da pergunta 1
     print(exibicao(jogos))
+
 def tira_quebra_de_linha(jogos: list[str]) -> list[str]:
     """
     Remove o último caractere (que é '\n') de cada string da lista.
@@ -26,7 +29,6 @@ def tira_quebra_de_linha(jogos: list[str]) -> list[str]:
         nova_lista.append(linha_sem_quebra)
     return nova_lista
 
-from dataclasses import dataclass
 @dataclass
 class Jogo:
     '''
@@ -37,7 +39,7 @@ class Jogo:
     visitante: str
     gols_visitante: int
 
-def nome_das_equipes(jogo:str) -> Jogo:
+def nome_das_equipes(jogo: str) -> Jogo:
     """
     Extrai os nomes do time anfitrião e visitante de uma string com o resultado do jogo,
     retornando um objeto Jogo com os nomes preenchidos e os gols zerados.
@@ -50,9 +52,7 @@ def nome_das_equipes(jogo:str) -> Jogo:
     for i in range(len(jogo)):
         if jogo[i] == " ":
             espacos.append(i)
-    # O nome do anfitrião vai do início até o espaço antes do placar do anfitrião
     anfitriao = jogo[:espacos[-3]]
-    # O nome do visitante vai do espaço depois do placar do anfitrião até o espaço antes do placar do visitante
     visitante = jogo[espacos[-2] + 1:espacos[-1]]
     jogos = Jogo(anfitriao, 0 , visitante, 0)
     return jogos
@@ -70,9 +70,7 @@ def placar_do_jogo(jogo: str) -> Jogo:
     for i in range(len(jogo)):
         if jogo[i] == " ":
             espacos.append(i)
-    # O placar do anfitrião está entre o penúltimo e o antepenúltimo espaço
     gols_anfitriao = int(jogo[espacos[-3] + 1:espacos[-2]])
-    # O placar do visitante está após o último espaço
     gols_visitante = int(jogo[espacos[-1] + 1:])
     return Jogo('', gols_anfitriao,'', gols_visitante)
 
@@ -106,7 +104,7 @@ def saldo_de_gols(placar: Jogo) -> int:
     return saldo
 
 @dataclass
-class estatisticas:
+class Estatisticas:
     '''
     Tipo de dado composto que serve para armazenar as estatisticas que
     serão exibidas
@@ -116,7 +114,7 @@ class estatisticas:
     vitorias: int
     saldo_de_gols: int
 
-def verificar_elemento(lista, elemento_procurado) -> bool:
+def verificar_elemento(lista: list[str], elemento_procurado: str) -> bool:
     """
     Verifica se um elemento está presente em uma lista.
 
@@ -132,7 +130,7 @@ def verificar_elemento(lista, elemento_procurado) -> bool:
             encontrado = True
     return encontrado
 
-def deve_trocar(a: estatisticas, b: estatisticas) -> bool:
+def deve_trocar(a: Estatisticas, b: Estatisticas) -> bool:
     """
     Determina se o time b deve vir antes do time a na ordenação,
     com base nos critérios: pontos, vitórias, saldo de gols e nome.
@@ -157,7 +155,7 @@ def deve_trocar(a: estatisticas, b: estatisticas) -> bool:
                     x = True
     return x
 
-def ordena_times(estat: list[estatisticas]):
+def ordena_times(estat: list[Estatisticas]) -> None:
     """
     Ordena uma lista de estatísticas de times segundo critérios de pontos,
     vitórias, saldo de gols e ordem alfabética do nome.
@@ -195,7 +193,7 @@ def list_str_para_jogo(lista: list[str]) -> list[Jogo]:
         ))
     return jogos
 
-def atualiza_estatisticas(nome_time: str, gols_feitos: int, gols_sofridos: int, nomes: list[str], estat: list[estatisticas]):
+def atualiza_estatisticas(nome_time: str, gols_feitos: int, gols_sofridos: int, nomes: list[str], estat: list[Estatisticas]) -> None:
     """
     Atualiza as estatísticas de um time com base no resultado de um jogo,
     adicionando o time caso ainda não exista.
@@ -209,7 +207,7 @@ def atualiza_estatisticas(nome_time: str, gols_feitos: int, gols_sofridos: int, 
     """
     if not verificar_elemento(nomes, nome_time):
         nomes.append(nome_time)
-        estat.append(estatisticas(nome_time, 0, 0, 0))
+        estat.append(Estatisticas(nome_time, 0, 0, 0))
 
     for i in range(len(estat)):
         if estat[i].nome == nome_time:
@@ -220,7 +218,7 @@ def atualiza_estatisticas(nome_time: str, gols_feitos: int, gols_sofridos: int, 
                 estat[i].pontos += 1
             estat[i].saldo_de_gols += (gols_feitos - gols_sofridos)
 
-def transforma_estatistica(jogos: list[str]) -> list[estatisticas]:
+def transforma_estatistica(jogos: list[str]) -> list[Estatisticas]:
     """
     Recebe uma lista de resultados de jogos e retorna a lista de estatísticas
     dos times ordenada pelo critério de classificação.
@@ -231,25 +229,22 @@ def transforma_estatistica(jogos: list[str]) -> list[estatisticas]:
     >>> resultado[0].nome
     'Botafogo'
     """
-    nomes: list[str]= []
-    estat: list[estatisticas] = []
+    nomes: list[str] = []
+    estat: list[Estatisticas] = []
 
     for i in range(len(jogos)):
         nomes_do_jogo = nome_das_equipes(jogos[i])
         placar_do_jogo_atual = placar_do_jogo(jogos[i])
-
-        # Atualiza anfitrião
         atualiza_estatisticas(
             nomes_do_jogo.anfitriao,placar_do_jogo_atual.gols_anfitriao,
-            placar_do_jogo_atual.gols_visitante, nomes, estat
-        )
-        # Atualiza visitante
+            placar_do_jogo_atual.gols_visitante, nomes, estat)
         atualiza_estatisticas(
             nomes_do_jogo.visitante, placar_do_jogo_atual.gols_visitante,
             placar_do_jogo_atual.gols_anfitriao, nomes, estat)
 
     ordena_times(estat)
     return estat
+
 def exibicao(jogos: list[str]) -> str:
     '''
     Gera uma string formatada com a classificação dos times a partir
@@ -310,3 +305,4 @@ def le_arquivo(nome: str) -> list[str]:
 
 if __name__ == '__main__':
     main()
+
