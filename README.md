@@ -17,5 +17,5 @@ Teams are ranked considering, in order, points, wins, goal difference, and alpha
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/repository-name.git
-   cd repository-name
+   git clone https://github.com/hugo-o-lima/tabela-brasileirao
+   cd tabela-brasileirao
