@@ -287,16 +287,6 @@ class EstatisticaCasa:
     - nome: nome do time
     - pontos: soma dos pontos conquistados em casa
     - jogos: número de jogos em casa
-    >>> estat = []
-    >>> atualiza_casa("Flamengo", 3, estat)
-    >>> estat
-    [EstatisticaCasa(nome='Flamengo', pontos=3, jogos=1)]
-    >>> atualiza_casa("Vasco", 1, estat)
-    >>> estat
-    [EstatisticaCasa(nome='Flamengo', pontos=3, jogos=1), EstatisticaCasa(nome='Vasco', pontos=1, jogos=1)]
-    >>> atualiza_casa("Flamengo", 1, estat)
-    >>> estat
-    [EstatisticaCasa(nome='Flamengo', pontos=4, jogos=2), EstatisticaCasa(nome='Vasco', pontos=1, jogos=1)]
     """
     nome: str
     pontos: int
@@ -307,6 +297,17 @@ def atualiza_casa(nome_time: str, pontos: int, estat: list[EstatisticaCasa]) -> 
     Atualiza a lista estat:
     - se o time já existe, acumula pontos e incrementa jogos
     - senão, cria nova entrada
+    Exemplo:
+    >>> estat = []
+    >>> atualiza_casa("Flamengo", 3, estat)
+    >>> estat
+    [EstatisticaCasa(nome='Flamengo', pontos=3, jogos=1)]
+    >>> atualiza_casa("Vasco", 1, estat)
+    >>> estat
+    [EstatisticaCasa(nome='Flamengo', pontos=3, jogos=1), EstatisticaCasa(nome='Vasco', pontos=1, jogos=1)]
+    >>> atualiza_casa("Flamengo", 1, estat)
+    >>> estat
+    [EstatisticaCasa(nome='Flamengo', pontos=4, jogos=2), EstatisticaCasa(nome='Vasco', pontos=1, jogos=1)]
     """
     for i in estat:
         if i.nome == nome_time:
@@ -320,6 +321,7 @@ def calcula_pontos_casa_rec(jogos: list[Jogo], estat: list[EstatisticaCasa]) -> 
     """
     Calcula recursivamente os pontos conquistados pelos times em jogos como anfitriões,
     atualizando a lista de estatísticas.
+    Exemplo:
     >>> jogos = [Jogo('Flamengo', 2, 'Vasco', 1), Jogo('Botafogo', 1, 'Cuiaba', 1), Jogo('Flamengo', 0, 'Botafogo', 2)]
     >>> estat_inicial = []
     >>> resultado = calcula_pontos_casa_rec(jogos, estat_inicial)
@@ -347,6 +349,7 @@ def calcula_pontos_casa_rec(jogos: list[Jogo], estat: list[EstatisticaCasa]) -> 
 def aux_recursiva(jogos: list[Jogo]) -> list[EstatisticaCasa]:
     """
     Função externa que inicializa o acumulador e chama a função recursiva.
+    Exemplo:
     >>> jogos = [Jogo('Flamengo', 2, 'Vasco', 1), Jogo('Botafogo', 1, 'Cuiaba', 1), Jogo('Flamengo', 0, 'Botafogo', 2)]
     >>> resultado = aux_recursiva(jogos)
     >>> resultado
@@ -367,7 +370,6 @@ def exibe_aproveitamento(jogos_str: list[str]) -> str:
     >>> exibe_aproveitamento(jogos_2)
     'Aproveitamento máximo em casa: 66.7% - Time: TimeA'
     """
-    # pré‑processamento inline
     linhas_sem_quebra = tira_quebra_de_linha(jogos_str)
     jogos = list_str_para_jogo(linhas_sem_quebra)
 
@@ -391,7 +393,6 @@ def exibe_aproveitamento(jogos_str: list[str]) -> str:
         resultado += melhores[i]
         if i < len(melhores) - 1:
             resultado += ", "
-
     return resultado
     # TODO: solução da pergunta 3
 @dataclass
@@ -404,6 +405,16 @@ class GolsSofridos:
 def atualiza_lista_gols(time: str, gols: int, lista_estat: list[GolsSofridos]) -> None:
     """
     Procura um time na lista e atualiza seus gols. Se não encontrar, cria um novo registro.
+    Exemplo:
+    >>> estatisticas = []
+    >>> atualiza_lista_gols('Corinthians', 2, estatisticas)
+    >>> print(estatisticas)
+    [GolsSofridos(nome='Corinthians', gols=2)]
+    >>> estatisticas = [GolsSofridos('Palmeiras', 1)]
+    >>> # Adiciona mais 3 gols ao mesmo time
+    >>> atualiza_lista_gols('Palmeiras', 3, estatisticas)
+    >>> print(estatisticas)
+    [GolsSofridos(nome='Palmeiras', gols=4)]
     """
     encontrado = False
     i = 0
@@ -436,7 +447,7 @@ def calcula_gols_sofridos_rec(jogos: list[Jogo], estat_gols: list[GolsSofridos])
 def exibe_melhor_defesa(jogos_str: list[str]) -> str:
     """
     Identifica o time que sofreu menos gols e retorna uma string formatada.
-
+    Exemplo:
     >>> jogos = ["Flamengo 2 Vasco 1\\n", "Vasco 1 Botafogo 1\\n", "Botafogo 3 Flamengo 2\\n"]
     >>> exibe_melhor_defesa(jogos)
     'Time com menos gols sofridos: Vasco, Botafogo (3 gols)'
@@ -493,4 +504,3 @@ def le_arquivo(nome: str) -> list[str]:
 
 if __name__ == '__main__':
     main()
-
